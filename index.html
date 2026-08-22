@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Satellite Tracker</title>
+    <style> body {margin: 0; overflow: hidden; background: #000; font-family: sans-serif; color: white;}
+        #infoPanel{
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width:280px;
+            height: 100%;
+            background: rgba (20, 20, 20, 0.7);
+            padding:20px;
+            box-sizing: border-box;
+            transition: right 0.3s ease;
+        }
+        #infoPanel.open{
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="globeViz"></div>
+
+    <div id="infoPanel">
+        <h2 id="infoName">-</h2>
+        <p>Altitude: <span id="infoAlt">-</span> km</p>
+        <p>Speed: <span id="infoSpeed">-</span>km/h</p>
+    </div>
+    <script src="//unpkg.com/globe.gl"></script>
+    <script type="module" src="script.js"></script>
+
+</body>
+</html>
