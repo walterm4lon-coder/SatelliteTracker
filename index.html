@@ -2,35 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Satellite Tracker</title>
-    <style>
-        body { margin: 0; overflow: hidden; background: #030303; font-family: sans-serif; color: rgb(255, 254, 254); }
-
-        #infoPanel {
-            position: fixed;
-            top: 0;
-            right: -320px;
-            width: 280px;
-            height: 100%;
-            background: rgba(20, 20, 20, 0.7);
-            padding: 20px;
-            box-sizing: border-box;
-            transition: right 0.3s ease;
-        }
-        #infoPanel.open {
-            right: 0;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <h1 id="welcome">Welcome</h1>
+
     <div id="globeViz"></div>
+
+    <button id="legendTab">LEGEND</button>
+
+    <a id="predictBtn" href="predict.html">Predict Passes</a>
+
+    <div id="legendPanel">
+        <h2>Legend</h2>
+        <div class="legendItem"><span class="legendDot" style="background: yellow;"></span> Space Stations</div>
+        <div class="legendItem"><span class="legendDot" style="background: blue;"></span> Visual (brightest)</div>
+        <div class="legendItem"><span class="legendDot" style="background: red;"></span> GPS</div>
+        <div class="legendItem"><span class="legendDot" style="background: green;"></span> Starlink</div>
+        <div class="legendItem"><span class="legendDot" style="background: orange;"></span> Weather</div>
+    </div>
 
     <div id="infoPanel">
         <h2 id="infoName">-</h2>
         <p>Altitude: <span id="infoAlt">-</span> km</p>
         <p>Speed: <span id="infoSpeed">-</span> km/h</p>
     </div>
+
+
 
     <script src="//unpkg.com/globe.gl"></script>
     <script type="module" src="script.js"></script>
