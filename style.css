@@ -181,8 +181,6 @@ body {
     transform: translateX(-50%) translateY(-2px);
 }
 
-/* predict.html */
-
 #instructionLabel {
     position: fixed;
     top: 22px;
