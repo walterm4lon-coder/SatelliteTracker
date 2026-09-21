@@ -14,9 +14,20 @@
 
     <div id="passesPanel">
         <h2>Upcoming Passes</h2>
+        <div id="passesTabs">
+            <button id="visibleTab" class="tabBtn active">Visible</button>
+            <button id="allTab" class="tabBtn">All Passes</button>
+        </div>
         <div id="passesList"></div>
     </div>
 
+    <div id="loadingScreen">
+        <div id="loadingHeader">SATELLITE TRACKER // WAIT UP TO 30 SECONDS</div>
+        <div id="loadingTerminal"></div>
+        <div id="loadingStatus">INITIALIZING...</div>
+    </div>
+
+    <script src="loader.js"></script>
     <script src="//unpkg.com/globe.gl"></script>
     <script type="module" src="predict.js"></script>
 </body>

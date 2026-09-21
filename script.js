@@ -1,134 +1,196 @@
-// import * as satellite from "https://cdn.jsdelivr.net/npm/satellite.js/+esm";
+import * as satellite from "https://cdn.jsdelivr.net/npm/satellite.js/+esm";
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.179.0/build/three.module.js";
 
-// const TLE_GROUPS = [
-//     { url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=TLE", limit: null, color: "yellow" },
-//     { url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=TLE", limit: 20, color: "blue" },
-//     { url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=gps-ops&FORMAT=TLE", limit: 20, color: "red" },
-//     { url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=TLE", limit: 20, color: "green" },
-//     { url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=weather&FORMAT=TLE", limit: 20, color: "orange" }
-// ];
+const TLE_GROUPS = [
+    { url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=TLE", limit: null, color: "yellow" },
+    { url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=TLE", limit: 20, color: "blue" },
+    { url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=gps-ops&FORMAT=TLE", limit: 20, color: "red" },
+    { url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=TLE", limit: 20, color: "green" },
+    { url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=weather&FORMAT=TLE", limit: 20, color: "orange" }
+];
 
-// function parseTLEBlock(text, color) {
-//     const lines = text.trim().split("\n");
-//     const satellites = [];
+function createStarsField() {
+    if (typeof THREE === "undefined") {
+        console.warn("THREE is not available — skipping star field");
+        return null;
+    }
 
-//     for (let i = 0; i < lines.length; i += 3) {
-//         const name = lines[i].trim();
-//         const line1 = lines[i + 1];
-//         const line2 = lines[i + 2];
-//         if (!line1 || !line2) continue;
+    const starsGeometry = new THREE.BufferGeometry();
+    const starsMaterial = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 2,
+        sizeAttenuation: false
+    });
 
-//         satellites.push({
-//             name: name,
-//             satrec: satellite.twoline2satrec(line1, line2),
-//             color: color
-//         });
-//     }
+    const starsVertices = [];
+    for (let i = 0; i < 2000; i++) {
+        const x = (Math.random() - 0.5) * 3000;
+        const y = (Math.random() - 0.5) * 3000;
+        const z = (Math.random() - 0.5) * 3000;
+        starsVertices.push(x, y, z);
+    }
 
-//     return satellites;
-// }
-
-// async function fetchGroup(group) {
-//     const response = await fetch(group.url);
-//     const text = await response.text();
-//     const sats = parseTLEBlock(text, group.color);
-//     return group.limit ? sats.slice(0, group.limit) : sats;
-// }
-
-// async function fetchAllSatellites() {
-//     let all = [];
-//     for (const group of TLE_GROUPS) {
-//         const sats = await fetchGroup(group);
-//         all = all.concat(sats);
-//     }
-//     return all;
-// }
-
-// function getPosition(satEntry) {
-//     const now = new Date();
-//     const positionAndVelocity = satellite.propagate(satEntry.satrec, now);
-//     const gmst = satellite.gstime(now);
-//     const positionGd = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
-//     const velocity = positionAndVelocity.velocity;
-//     const speedKmS = Math.sqrt(velocity.x ** 2 + velocity.y ** 2 + velocity.z ** 2);
-
-//     return {
-//         name: satEntry.name,
-//         satrec: satEntry.satrec,
-//         color: satEntry.color,
-//         lat: satellite.degreesLat(positionGd.latitude),
-//         lng: satellite.degreesLong(positionGd.longitude),
-//         alt: positionGd.height,
-//         speed: speedKmS * 3600
-//     };
-// }
-
-// function getOrbitPath(satrec) {
-//     const now = new Date();
-//     const points = [];
-
-//     const periodMinutes = (2 * Math.PI) / satrec.no;
-//     const steps = 90;
-
-//     for (let i = 0; i <= steps; i++) {
-//         const m = -periodMinutes / 2 + (i / steps) * periodMinutes;
-//         const time = new Date(now.getTime() + m * 60000);
-//         const positionAndVelocity = satellite.propagate(satrec, time);
-//         const gmst = satellite.gstime(time);
-//         const positionGd = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
-
-//         points.push([
-//             satellite.degreesLat(positionGd.latitude),
-//             satellite.degreesLong(positionGd.longitude),
-//             positionGd.height / 6371
-//         ]);
-//     }
-//     return points;
-// }
-
-// async function main() {
-//     const satellites = await fetchAllSatellites();
-
-//     const infoPanel = document.getElementById("infoPanel");
-//     const infoName = document.getElementById("infoName");
-//     const infoAlt = document.getElementById("infoAlt");
-//     const infoSpeed = document.getElementById("infoSpeed");
-
-//     const myGlobe = Globe()(document.getElementById("globeViz"))
-//         .globeImageUrl("//unpkg.com/three-globe/example/img/earth-blue-marble.jpg")
-//         .backgroundColor("#000000")
-//         .width(window.innerWidth)
-//         .height(window.innerHeight)
-//         .pointColor(d => d.color)
-//         .pointRadius(0.25)
-//         .pointAltitude(0.02)
-//         .pathColor(() => "cyan")
-//         .pathStroke(0.5)
-//         .pathDashLength(0.01)
-//         .pathDashGap(0.004)
-//         .pathDashAnimateTime(20000)
-//         .onPointClick(point => {
-//             infoName.textContent = point.name;
-//             infoAlt.textContent = point.alt.toFixed(1);
-//             infoSpeed.textContent = point.speed.toFixed(0);
-//             infoPanel.classList.add("open");
-
-//             myGlobe.pathsData([getOrbitPath(point.satrec)]);
-//         });
-
-//     function updatePosition() {
-//         const positions = satellites.map(getPosition);
-//         myGlobe.pointsData(positions);
-//     }
-
-//     updatePosition();
-//     setInterval(updatePosition, 2000);
-// }
-
-// document.getElementById("legendTab").addEventListener("click", () => {
-//     document.getElementById("legendPanel").classList.toggle("open");
-// });
-
-// main();
+    starsGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(starsVertices), 3));
+    return new THREE.Points(starsGeometry, starsMaterial);
+}
 
 
+
+function parseTLEBlock(text, color) {
+    const lines = text.trim().split("\n");
+    const satellites = [];
+
+    for (let i = 0; i < lines.length; i += 3) {
+        const name = lines[i].trim();
+        const line1 = lines[i + 1];
+        const line2 = lines[i + 2];
+        if (!line1 || !line2) continue;
+
+        satellites.push({
+            name: name,
+            satrec: satellite.twoline2satrec(line1, line2),
+            color: color
+        });
+    }
+
+    return satellites;
+}
+
+async function fetchGroup(group) {
+    try {
+        const response = await fetch(group.url);
+        if (!response.ok) {
+            console.warn(`Skipping ${group.url} — server responded with ${response.status}`);
+            return [];
+        }
+        const text = await response.text();
+        const sats = parseTLEBlock(text, group.color);
+        return group.limit ? sats.slice(0, group.limit) : sats;
+    } catch (err) {
+        console.warn(`Skipping ${group.url} — request failed:`, err);
+        return [];
+    }
+}
+
+async function fetchAllSatellites() {
+    let all = [];
+    for (const group of TLE_GROUPS) {
+        const sats = await fetchGroup(group);
+        all = all.concat(sats);
+    }
+    return all;
+}
+
+function getPosition(satEntry) {
+    const now = new Date();
+    const positionAndVelocity = satellite.propagate(satEntry.satrec, now);
+    const gmst = satellite.gstime(now);
+    const positionGd = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
+    const velocity = positionAndVelocity.velocity;
+    const speedKmS = Math.sqrt(velocity.x ** 2 + velocity.y ** 2 + velocity.z ** 2);
+
+    return {
+        name: satEntry.name,
+        satrec: satEntry.satrec,
+        color: satEntry.color,
+        lat: satellite.degreesLat(positionGd.latitude),
+        lng: satellite.degreesLong(positionGd.longitude),
+        alt: positionGd.height,
+        speed: speedKmS * 3600
+    };
+}
+
+function getOrbitPath(satrec) {
+    const now = new Date();
+    const points = [];
+
+    const periodMinutes = (2 * Math.PI) / satrec.no;
+    const steps = 90;
+
+    for (let i = 0; i <= steps; i++) {
+        const m = -periodMinutes / 2 + (i / steps) * periodMinutes;
+        const time = new Date(now.getTime() + m * 60000);
+        const positionAndVelocity = satellite.propagate(satrec, time);
+        const gmst = satellite.gstime(time);
+        const positionGd = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
+
+        points.push([
+            satellite.degreesLat(positionGd.latitude),
+            satellite.degreesLong(positionGd.longitude),
+            positionGd.height / 6371
+        ]);
+    }
+    return points;
+}
+
+async function main() {
+    const infoPanel = document.getElementById("infoPanel");
+    const infoName = document.getElementById("infoName");
+    const infoAlt = document.getElementById("infoAlt");
+    const infoSpeed = document.getElementById("infoSpeed");
+
+    const satellites = await fetchAllSatellites();
+    if (satellites.length === 0) {
+        infoPanel.innerHTML = `
+            <h2>SORRY, NO MORE</h2>
+            <p style="padding-left: 0;">
+                UVE REACHED THE REQUEST LIMIT.<br><br>
+                PLEASE TRY AGAIN IN A COUPLE OF HOURS.
+            </p>
+        `;
+    
+        infoPanel.classList.add("open");
+    }
+
+
+
+    const myGlobe = Globe()(document.getElementById("globeViz"))
+        .globeImageUrl("https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg")
+        .backgroundColor("#000000")
+        .width(window.innerWidth)
+        .height(window.innerHeight)
+        .pointColor(d => d.color)
+        .pointRadius(0.25)
+        .pointAltitude(0.02)
+        .pathColor(() => "cyan")
+        .pathStroke(0.5)
+        .pathDashLength(0.01)
+        .pathDashGap(0.004)
+        .pathDashAnimateTime(20000)
+        .onGlobeReady(() => {
+            window.finishLoader?.();
+        })
+        .onPointClick(point => {
+            infoName.textContent = point.name;
+            infoAlt.textContent = point.alt.toFixed(1);
+            infoSpeed.textContent = point.speed.toFixed(0);
+            infoPanel.classList.add("open");
+
+            myGlobe.pathsData([getOrbitPath(point.satrec)]);
+            myGlobe.pointOfView({ lat: point.lat, lng: point.lng, altitude: 1.5 }, 1000);
+
+        });
+    
+    
+    const stars = createStarsField();
+    if (stars) {
+        myGlobe.scene().add(stars);
+        myGlobe.camera().far = 5000;
+        myGlobe.camera().updateProjectionMatrix();
+    }
+    
+
+    function updatePosition() {
+        const positions = satellites.map(getPosition);
+        myGlobe.pointsData(positions);
+    }
+
+    updatePosition();
+    setInterval(updatePosition, 2000);
+}
+
+document.getElementById("legendTab").addEventListener("click", () => {
+    document.getElementById("legendPanel").classList.toggle("open");
+});
+
+main();

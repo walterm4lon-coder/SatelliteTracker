@@ -1,136 +1,425 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+    --orange: #d96a0b;
+    --orange-bright: #f07b14;
+    --brown: rgba(104, 45, 8, 0.76);
+    --brown-dark: rgba(54, 24, 7, 0.78);
+    --cream: #ead8cb;
+    --cream-soft: #cbb19f;
+    --dark-text: #4a230d;
+}
+
 body {
     margin: 0;
     overflow: hidden;
-    background: #030303;
-    font-family: sans-serif;
-    color: rgb(255, 254, 254);
+    background: #000000;
+    font-family: 'Press Start 2P', cursive;
+    color: var(--cream);
+    font-size: 14px;
 }
 
-
+#globeViz {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+}
 
 #infoPanel {
     position: fixed;
-    top: 0;
-    right: -320px;
-    width: 280px;
-    height: 100%;
-    background: rgba(6, 6, 6, 0.7);
-    padding: 20px;
+    top: 50%;
+    right: -35vw;
+    width: 30vw;
+    min-width: 410px;
+    max-width: 560px;
+    height: 78vh;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, rgba(125, 55, 10, 0.78), rgba(78, 31, 5, 0.70));
+    padding: 38px 32px;
     box-sizing: border-box;
-    transition: right 0.3s ease;
+    transition: right 0.35s ease;
+    overflow-y: auto;
+    backdrop-filter: blur(7px);
+    z-index: 30;
 }
+
 #infoPanel.open {
-    right: 0;
+    right: 2vw;
+}
+
+#infoPanel h2 {
+    font-size: clamp(24px, 2.1vw, 38px);
+    margin: 0 0 42px 0;
+    color: var(--cream);
+    line-height: 1.35;
+    text-transform: uppercase;
+    overflow-wrap: break-word;
+}
+
+#infoPanel p {
+    position: relative;
+    font-size: clamp(13px, 1vw, 17px);
+    margin: 0 0 30px 0;
+    padding-left: 50px;
+    line-height: 1.8;
+    color: var(--cream-soft);
+    text-transform: uppercase;
+}
+
+#infoPanel p::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 6px;
+    width: 22px;
+    height: 22px;
+    background: rgba(213, 190, 174, 0.90);
+}
+
+#infoPanel p span {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 14px 18px;
+    background: rgba(223, 204, 191, 0.82);
+    color: var(--dark-text);
+    font-size: clamp(14px, 1.1vw, 19px);
+    line-height: 1.25;
+    text-align: center;
 }
 
 #legendTab {
     position: fixed;
     top: 50%;
-    left: 0;
+    left: 14px;
     transform: translateY(-50%);
-    background: rgba(20, 20, 20, 0.8);
-    color: white;
+    background: rgba(132, 56, 8, 0.78);
+    color: var(--cream);
     border: none;
-    padding: 12px 6px;
+    padding: 18px 11px;
     cursor: pointer;
-    z-index: 10;
+    z-index: 50;
     writing-mode: vertical-rl;
-    font-family: sans-serif;
-    letter-spacing: 1px;
+    font-family: 'Press Start 2P', cursive;
+    letter-spacing: 2px;
+    font-size: 11px;
+    backdrop-filter: blur(4px);
+}
+
+#legendTab:hover {
+    background: rgba(187, 82, 9, 0.9);
 }
 
 #legendPanel {
     position: fixed;
-    top: 0;
-    left: -260px;
-    width: 220px;
-    height: 100%;
-    background: rgba(20, 20, 20, 0.85);
-    padding: 20px;
+    top: 50%;
+    left: -390px;
+    width: 340px;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, rgba(123, 53, 8, 0.82), rgba(67, 27, 5, 0.78));
+    padding: 32px;
     box-sizing: border-box;
-    transition: left 0.3s ease;
-    z-index: 9;
+    transition: left 0.35s ease;
+    backdrop-filter: blur(7px);
+    z-index: 40;
 }
+
 #legendPanel.open {
-    left: 0;
+    left: 80px;
+}
+
+#legendPanel h2 {
+    font-size: 20px;
+    margin: 0 0 30px 0;
+    color: var(--cream);
+    text-transform: uppercase;
 }
 
 .legendItem {
     display: flex;
     align-items: center;
-    margin-bottom: 12px;
-    font-size: 14px;
+    gap: 15px;
+    margin-bottom: 20px;
+    font-size: 11px;
+    font-family: 'Press Start 2P', cursive;
+    color: var(--cream-soft);
+    line-height: 1.5;
 }
 
 .legendDot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
     display: inline-block;
-    margin-right: 10px;
 }
 
 #predictBtn {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    background: rgba(20, 20, 20, 0.8);
-    color: white;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 119, 0, 0.496);
+    color: var(--cream);
     text-decoration: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-family: sans-serif;
-    font-size: 14px;
-    z-index: 10;
+    border: none;
+    padding: 17px 34px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 15px;
+    line-height: 1.3;
+    z-index: 50;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+    backdrop-filter: blur(5px);
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+#predictBtn:hover {
+    background: rgba(187, 83, 9, 0.561);
+    transform: translateX(-50%) translateY(-2px);
 }
 
 /* predict.html */
 
 #instructionLabel {
     position: fixed;
-    top: 20px;
-    left: 20px;
-    background: rgba(20, 20, 20, 0.7);
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-size: 14px;
-    z-index: 10;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(132, 56, 8, 0.78);
+    padding: 16px 25px;
+    font-size: 11px;
+    line-height: 1.5;
+    z-index: 50;
+    font-family: 'Press Start 2P', cursive;
+    color: var(--cream);
+    text-align: center;
+    backdrop-filter: blur(5px);
 }
 
 #backLink {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    color: white;
+    top: 22px;
+    left: 22px;
+    color: var(--cream);
     text-decoration: none;
-    background: rgba(20, 20, 20, 0.7);
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-size: 14px;
-    z-index: 10;
+    background: rgba(132, 56, 8, 0.78);
+    border: none;
+    padding: 15px 20px;
+    font-size: 11px;
+    z-index: 50;
+    font-family: 'Press Start 2P', cursive;
+    backdrop-filter: blur(5px);
+}
+
+#backLink:hover {
+    background: rgba(187, 82, 9, 0.9);
 }
 
 #passesPanel {
     position: fixed;
-    top: 0;
-    right: -320px;
-    width: 300px;
-    height: 100%;
-    background: rgba(20, 20, 20, 0.85);
-    padding: 20px;
+    top: 50%;
+    right: -35vw;
+    width: 30vw;
+    min-width: 430px;
+    max-width: 570px;
+    height: 78vh;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, rgba(125, 55, 10, 0.80), rgba(73, 29, 5, 0.75));
+    padding: 35px 30px;
     box-sizing: border-box;
     overflow-y: auto;
-    transition: right 0.3s ease;
-    z-index: 8;
+    transition: right 0.35s ease;
+    backdrop-filter: blur(7px);
+    z-index: 30;
 }
+
 #passesPanel.open {
-    right: 0;
+    right: 2vw;
+}
+
+#passesPanel h2 {
+    font-size: 22px;
+    margin: 0 0 28px 0;
+    color: var(--cream);
+    line-height: 1.5;
+    text-transform: uppercase;
+}
+
+#passesTabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.tabBtn {
+    flex: 1;
+    background: rgba(105, 43, 5, 0.65);
+    color: var(--cream-soft);
+    border: none;
+    padding: 14px 12px;
+    cursor: pointer;
+    font-size: 10px;
+    line-height: 1.4;
+    font-family: 'Press Start 2P', cursive;
+}
+
+.tabBtn.active {
+    background: rgba(217, 106, 11, 0.58);
+    color: var(--cream);
 }
 
 .passItem {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 10px 0;
-    font-size: 13px;
-    line-height: 1.5;
+    position: relative;
+    margin-bottom: 18px;
+    padding: 16px 18px 16px 48px;
+    background: rgba(221, 196, 179, 0.12);
+    color: var(--cream-soft);
+    font-size: 10px;
+    line-height: 1.9;
+    cursor: pointer;
 }
 
+.passItem::before {
+    content: "";
+    position: absolute;
+    left: 15px;
+    top: 18px;
+    width: 18px;
+    height: 18px;
+    background: var(--cream-soft);
+}
+
+.passItem strong {
+    color: var(--cream);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.passItem:hover {
+    background: rgba(230, 204, 184, 0.20);
+}
+
+.overheadSummary {
+    background: rgba(217, 106, 11, 0.22);
+    border: none;
+    padding: 16px 18px;
+    font-size: 10px;
+    line-height: 1.7;
+    margin-bottom: 22px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+    color: var(--cream);
+}
+
+.overheadSummary:hover {
+    background: rgba(217, 106, 11, 0.34);
+}
+
+#infoPanel::-webkit-scrollbar,
+#passesPanel::-webkit-scrollbar {
+    width: 8px;
+}
+
+#infoPanel::-webkit-scrollbar-track,
+#passesPanel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#infoPanel::-webkit-scrollbar-thumb,
+#passesPanel::-webkit-scrollbar-thumb {
+    background: rgba(217, 106, 11, 0.70);
+}
+
+@media (max-width: 1100px) {
+    #infoPanel,
+    #passesPanel {
+        width: 38vw;
+        min-width: 380px;
+    }
+}
+
+@media (max-width: 700px) {
+    #infoPanel,
+    #passesPanel {
+        width: calc(100vw - 30px);
+        min-width: 0;
+        height: 72vh;
+        right: -110vw;
+    }
+
+    #infoPanel.open,
+    #passesPanel.open {
+        right: 15px;
+    }
+
+    #predictBtn {
+        font-size: 10px;
+        padding: 14px 18px;
+    }
+}
+
+#loadingScreen {
+    position: fixed;
+    inset: 0;
+    background: #000000;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    padding: 35px 45px;
+    box-sizing: border-box;
+    color: #f0d7c4;
+    font-family: 'Press Start 2P', cursive;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+#loadingScreen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#loadingHeader {
+    background: rgba(255, 110, 0, 0.35);
+    padding: 15px 20px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    color: #f3dfd0;
+}
+
+#loadingTerminal {
+    flex: 1;
+    overflow: hidden;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.45;
+    color: #e06c1a;
+    white-space: pre-wrap;
+}
+
+.loadingLine {
+    opacity: 0;
+    animation: lineAppear 0.05s linear forwards;
+}
+
+@keyframes lineAppear {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#loadingStatus {
+    margin-top: 18px;
+    background: rgba(255, 110, 0, 0.25);
+    padding: 12px 18px;
+    font-size: 11px;
+    color: #f0d7c4;
+}
